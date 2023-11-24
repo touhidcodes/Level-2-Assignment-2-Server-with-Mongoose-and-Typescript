@@ -54,7 +54,7 @@ const getSingleUser = async (req: Request, res: Response) => {
 
 const updateUser = async (req: Request, res: Response) => {
   try {
-    const userId = req.params.userId;
+    const { userId } = req.params;
     const userData = req.body;
     const result = await UserServices.updateUserIntoDB(userId, userData);
     res.status(200).json({
@@ -76,7 +76,7 @@ const updateUser = async (req: Request, res: Response) => {
 
 const deleteUser = async (req: Request, res: Response) => {
   try {
-    const userId = req.params.userId;
+    const { userId } = req.params;
     await UserServices.deleteUserFromDB(userId);
     res.status(200).json({
       success: true,

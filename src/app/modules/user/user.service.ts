@@ -12,23 +12,20 @@ const getUserFromDB = async (): Promise<User[]> => {
 };
 
 const getSingleUserFromDB = async (id: string): Promise<User | null> => {
-  const result = await UserModel.findById(id);
+  const result = await UserModel.findOne({ userId: id });
   return result;
 };
 
-const updateUserIntoDB = async (
-  id: string,
-  userData: User
-): Promise<User | null> => {
-  const result = await UserModel.findByIdAndUpdate(id, userData, {
+const updateUserIntoDB = async (userId: string, userData: User) => {
+  const result = await UserModel.updateOne({ userId }, userData, {
     new: true,
     runValidators: true,
   });
   return result;
 };
 
-const deleteUserFromDB = async (id: string): Promise<User | null> => {
-  const result = await UserModel.findByIdAndDelete(id);
+const deleteUserFromDB = async (userId: string) => {
+  const result = await UserModel.updateOne({ userId }, { isActive: false });
   return result;
 };
 
