@@ -1,22 +1,22 @@
 import mongoose, { Schema } from "mongoose";
-import { Address, FullName, Order, User } from "./user.interface";
+import { Address, FullName, User } from "./user.interface";
 
-const UserNameSchema = new Schema<FullName>({
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
-});
+const UserNameSchema = new Schema<FullName>(
+  {
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+  },
+  { _id: false }
+);
 
-const AddressSchema = new Schema<Address>({
-  street: { type: String, required: true },
-  city: { type: String, required: true },
-  country: { type: String, required: true },
-});
-
-const OrderSchema = new Schema<Order>({
-  productName: { type: String, required: true },
-  price: { type: Number, required: true },
-  quantity: { type: Number, required: true },
-});
+const AddressSchema = new Schema<Address>(
+  {
+    street: { type: String, required: true },
+    city: { type: String, required: true },
+    country: { type: String, required: true },
+  },
+  { _id: false }
+);
 
 const userSchema = new Schema<User>({
   userId: { type: Number, required: true, unique: true },
@@ -28,7 +28,6 @@ const userSchema = new Schema<User>({
   isActive: { type: Boolean, required: true },
   hobbies: { type: [String], required: true },
   address: AddressSchema,
-  orders: [OrderSchema],
 });
 
 const UserModel = mongoose.model<User>("User", userSchema);
