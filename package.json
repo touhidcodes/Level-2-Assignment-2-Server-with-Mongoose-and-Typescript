@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "server:on": "tsnd ./src/app/server.ts",
+    "dev": "tsnd ./src/server.ts",
+    "start": "node ./dist/server.js",
     "lint": "eslint src --ignore-path .eslintignore --ext .ts",
     "lint:fix": "npm run lint --fix",
     "test": "echo \"Error: no test specified\" && exit 1"

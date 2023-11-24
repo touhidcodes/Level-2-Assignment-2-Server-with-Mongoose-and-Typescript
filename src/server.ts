@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-import config from "./config";
+import config from "./app/config";
 import app from "./app";
 
-async function main() {
+async function server() {
   try {
     await mongoose.connect(config.database_uri as string);
 
@@ -14,4 +14,4 @@ async function main() {
   }
 }
 
-main();
+server();
