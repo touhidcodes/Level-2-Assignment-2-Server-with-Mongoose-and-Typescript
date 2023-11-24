@@ -1,23 +1,29 @@
-import { User } from "./user.interface";
-import UserModel from "./user.model";
+import { TUser } from "./user.interface";
+import User from "./user.model";
 
-const createUserIntoDB = async (user: User): Promise<User> => {
-  const result = await UserModel.create(user);
+const createUserIntoDB = async (user: TUser) => {
+  // if (await User.isUserExists(user.userId)) {
+  //   throw new Error("User Already Exists");
+  // }
+  const result = await User.create(user);
   return result;
 };
 
-const getUserFromDB = async (): Promise<User[]> => {
-  const result = await UserModel.find();
+const getUserFromDB = async (): Promise<TUser[]> => {
+  const result = await User.find();
   return result;
 };
 
-const getSingleUserFromDB = async (id: string): Promise<User | null> => {
-  const result = await UserModel.findOne({ userId: id });
+const getSingleUserFromDB = async (id: string) => {
+  // if (await User.isUserExists(id)) {
+  //   throw new Error("User Already Exists");
+  // }
+  const result = await User.findOne({ userId: id });
   return result;
 };
 
-const updateUserIntoDB = async (userId: string, userData: User) => {
-  const result = await UserModel.updateOne({ userId }, userData, {
+const updateUserIntoDB = async (userId: string, userData: TUser) => {
+  const result = await User.updateOne({ userId }, userData, {
     new: true,
     runValidators: true,
   });
@@ -25,7 +31,7 @@ const updateUserIntoDB = async (userId: string, userData: User) => {
 };
 
 const deleteUserFromDB = async (userId: string) => {
-  const result = await UserModel.updateOne({ userId }, { isActive: false });
+  const result = await User.updateOne({ userId }, { isActive: false });
   return result;
 };
 

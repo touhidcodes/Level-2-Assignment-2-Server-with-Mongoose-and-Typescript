@@ -1,7 +1,8 @@
 import mongoose, { Schema } from "mongoose";
-import { Address, FullName, User } from "./user.interface";
+import { TAddress, TFullName, TUser, UserModel } from "./user.interface";
+import { OrderSchema } from "../order/order.model";
 
-const UserNameSchema = new Schema<FullName>(
+const UserNameSchema = new Schema<TFullName>(
   {
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
@@ -9,7 +10,7 @@ const UserNameSchema = new Schema<FullName>(
   { _id: false }
 );
 
-const AddressSchema = new Schema<Address>(
+const AddressSchema = new Schema<TAddress>(
   {
     street: { type: String, required: true },
     city: { type: String, required: true },
@@ -18,7 +19,7 @@ const AddressSchema = new Schema<Address>(
   { _id: false }
 );
 
-const userSchema = new Schema<User>({
+const userSchema = new Schema<TUser, UserModel>({
   userId: { type: Number, required: true, unique: true },
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
@@ -28,8 +29,24 @@ const userSchema = new Schema<User>({
   isActive: { type: Boolean, required: true },
   hobbies: { type: [String], required: true },
   address: AddressSchema,
+  orders: OrderSchema,
 });
 
-const UserModel = mongoose.model<User>("User", userSchema);
+//  static method
+userSchema.statics.isUserExist = async function (id: string) {
+  const existingUser = await User.findOne({ id });
+  return existingUser;
+};
 
-export default UserModel;
+// Define a pre-save hook to create 'orders' property if it doesn't exist
+userSchema.pre<TUser>("save", function (next) {
+  if (!this.orders) {
+    this.orders = [];
+  }
+  console.log(this);
+  next();
+});
+
+const User = mongoose.model<TUser, UserModel>("User", userSchema);
+
+export default User;

@@ -9,11 +9,32 @@ const createUser = async (req: Request, res: Response) => {
     //  call service
     const result = await UserServices.createUserIntoDB(user);
 
+    // Destructure the user object and omit the 'password' property
+    const {
+      userId,
+      username,
+      fullName,
+      age,
+      email,
+      isActive,
+      hobbies,
+      address,
+    } = result;
+
     //  send response
     res.status(201).json({
       success: true,
       message: "User is created successfully",
-      data: result,
+      data: {
+        userId,
+        username,
+        fullName,
+        age,
+        email,
+        isActive,
+        hobbies,
+        address,
+      },
     });
   } catch (error) {
     //     success: false,
@@ -28,6 +49,7 @@ const createUser = async (req: Request, res: Response) => {
 const getAllUsers = async (req: Request, res: Response) => {
   try {
     const result = await UserServices.getUserFromDB();
+
     res.status(200).json({
       success: true,
       message: "Users fached successfully",
