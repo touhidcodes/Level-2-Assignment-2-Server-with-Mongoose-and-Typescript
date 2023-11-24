@@ -12,7 +12,7 @@ const getUserFromDB = async (): Promise<User[]> => {
 };
 
 const getSingleUserFromDB = async (id: string): Promise<User | null> => {
-  const result = await UserModel.findOne({ userId: id });
+  const result = await UserModel.findById(id);
   return result;
 };
 
