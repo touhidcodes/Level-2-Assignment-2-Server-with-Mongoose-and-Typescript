@@ -40,6 +40,11 @@ const createOrderIntoDB = async (order: TOrder) => {
   return result;
 };
 
+const getOrderFromDB = async (id: string) => {
+  const result = await User.findOne({ userId: id });
+  return result;
+};
+
 export const UserServices = {
   createUserIntoDB,
   getUserFromDB,
@@ -47,4 +52,5 @@ export const UserServices = {
   updateUserIntoDB,
   deleteUserFromDB,
   createOrderIntoDB,
+  getOrderFromDB,
 };
