@@ -59,7 +59,6 @@ const userSchema = new Schema<TUser & Document, UserModel>({
 });
 
 //  static method
-
 userSchema.statics.isUserExists = async function (
   userId: number
 ): Promise<TUser | null> {
@@ -75,7 +74,6 @@ userSchema.statics.calculateTotalPrice = async function (userId: string) {
   }
   // Calculate total price of orders
   const result = await this.aggregate([
-    { $match: { userId } },
     { $unwind: "$orders" },
     {
       $group: {
@@ -85,7 +83,6 @@ userSchema.statics.calculateTotalPrice = async function (userId: string) {
         },
       },
     },
-    { $project: { totalPrice: 1, userId: 1, fullName: 1 } },
   ]);
 
   return result.length > 0 ? result[0].totalPrice : 0;
