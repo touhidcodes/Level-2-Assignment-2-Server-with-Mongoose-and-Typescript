@@ -20,7 +20,7 @@ const getUserFromDB = async () => {
 const getSingleUserFromDB = async (id: string) => {
   const result = await User.findOne({ userId: id }).select({
     password: 0,
-    orders: 0,
+    // orders: 0,
   });
   return result;
 };
@@ -28,16 +28,14 @@ const getSingleUserFromDB = async (id: string) => {
 const updateUserIntoDB = async (userId: string, userData: TUser) => {
   const result = await User.updateOne({ userId }, userData, {
     new: true,
-    runValidators: true,
   }).select({
     password: 0,
-    userName: 0,
   });
   return result;
 };
 
 const deleteUserFromDB = async (userId: string) => {
-  const result = await User.updateOne({ userId }, { isActive: false });
+  const result = await User.deleteOne({ userId });
   return result;
 };
 

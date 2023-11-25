@@ -8,7 +8,7 @@ router.post("/", UserControllers.createUser);
 router.get("/", UserControllers.getAllUsers);
 router.get("/:userId", UserControllers.getSingleUser);
 router.put("/:userId", UserControllers.updateUser);
-router.patch("/:userId", UserControllers.deleteUser);
+router.delete("/:userId", UserControllers.deleteUser);
 
 //  order routes
 router.put("/:userId/orders", UserControllers.createOrder);
