@@ -1,14 +1,18 @@
 import { Request, Response } from "express";
 import { UserServices } from "./user.service";
 import User from "./user.model";
+import TUserValidation from "./user.validation";
 
 const createUser = async (req: Request, res: Response) => {
   try {
     // get data
     const { user } = req.body;
 
+    //  zod validation
+    const zodParseData = TUserValidation.parse(user);
+
     //  call service
-    const result = await UserServices.createUserIntoDB(user);
+    const result = await UserServices.createUserIntoDB(zodParseData);
 
     // Destructure the user object and omit the 'password' property
     const {
@@ -38,12 +42,14 @@ const createUser = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    //     success: false,
-    //     message: "User not created",
-    //     error: {
-    //         code: 404,
-    //         description: "User not created!"
-    // }
+    res.status(404).json({
+      success: false,
+      message: "User not created",
+      error: {
+        code: 404,
+        description: "User not created",
+      },
+    });
   }
 };
 
@@ -111,48 +117,29 @@ const deleteUser = async (req: Request, res: Response) => {
 };
 
 const createOrder = async (req: Request, res: Response) => {
-  // get data
-  const { userId } = req.params;
-  const { productName, price, quantity } = req.body;
-
   try {
-    // Find the user by ID
-    const user = await User.findOne({ userId });
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-        error: {
-          code: 404,
-          description: "User not found!",
+    // get data
+    const { userId } = req.params;
+    const { productName, price, quantity } = req.body;
+    await User.findOneAndUpdate(
+      { userId },
+      {
+        $push: {
+          orders: {
+            productName,
+            price,
+            quantity,
+          },
         },
-      });
-    }
+      }
+    );
 
-    // Check if the 'orders' property exists; if not, create it
-    if (!user.orders) {
-      user.orders = [];
-    }
-
-    // Append the new order to the 'orders' array
-    user.orders.push({
-      productName,
-      price,
-      quantity,
-    });
-
-    // Save the updated user document
-    await user.save();
-
-    // Respond with success message
     res.status(400).json({
       success: true,
       message: "Order created successfully!",
       data: null,
     });
   } catch (error) {
-    // Handle any errors that occur during the process
     return res.status(500).json({
       success: false,
       message: "User not found",
