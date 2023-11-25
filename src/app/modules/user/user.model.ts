@@ -1,4 +1,6 @@
 import mongoose, { Schema } from "mongoose";
+import bcrypt from "bcrypt";
+
 import {
   TAddress,
   TFullName,
@@ -6,6 +8,7 @@ import {
   TUser,
   UserModel,
 } from "./user.interface";
+import config from "../../config";
 
 const UserNameSchema = new Schema<TFullName>(
   {
@@ -53,7 +56,13 @@ userSchema.statics.isUserExist = async function (id: string) {
 };
 
 // Define a pre-save hook to create 'orders' property if it doesn't exist
-userSchema.pre<TUser>("save", function (next) {
+userSchema.pre("save", async function (next) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const user = this;
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_round)
+  );
   next();
 });
 
