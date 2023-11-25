@@ -1,6 +1,11 @@
 import mongoose, { Schema } from "mongoose";
-import { TAddress, TFullName, TUser, UserModel } from "./user.interface";
-import { OrderSchema } from "../order/order.model";
+import {
+  TAddress,
+  TFullName,
+  TOrder,
+  TUser,
+  UserModel,
+} from "./user.interface";
 
 const UserNameSchema = new Schema<TFullName>(
   {
@@ -19,6 +24,15 @@ const AddressSchema = new Schema<TAddress>(
   { _id: false }
 );
 
+export const orderSchema = new Schema<TOrder>(
+  {
+    productName: { type: String, required: true },
+    price: { type: Number, required: true },
+    quantity: { type: Number, required: true },
+  },
+  { _id: false }
+);
+
 const userSchema = new Schema<TUser, UserModel>({
   userId: { type: Number, required: true, unique: true },
   username: { type: String, required: true, unique: true },
@@ -29,7 +43,7 @@ const userSchema = new Schema<TUser, UserModel>({
   isActive: { type: Boolean, required: true },
   hobbies: { type: [String], required: true },
   address: AddressSchema,
-  orders: OrderSchema,
+  orders: { type: [orderSchema], default: [] },
 });
 
 //  static method
@@ -40,10 +54,6 @@ userSchema.statics.isUserExist = async function (id: string) {
 
 // Define a pre-save hook to create 'orders' property if it doesn't exist
 userSchema.pre<TUser>("save", function (next) {
-  if (!this.orders) {
-    this.orders = [];
-  }
-  console.log(this);
   next();
 });
 

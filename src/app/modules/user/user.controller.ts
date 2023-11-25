@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { UserServices } from "./user.service";
+import User from "./user.model";
 
 const createUser = async (req: Request, res: Response) => {
   try {
@@ -109,10 +110,65 @@ const deleteUser = async (req: Request, res: Response) => {
   }
 };
 
+const createOrder = async (req: Request, res: Response) => {
+  // get data
+  const { userId } = req.params;
+  const { productName, price, quantity } = req.body;
+
+  try {
+    // Find the user by ID
+    const user = await User.findOne({ userId });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        error: {
+          code: 404,
+          description: "User not found!",
+        },
+      });
+    }
+
+    // Check if the 'orders' property exists; if not, create it
+    if (!user.orders) {
+      user.orders = [];
+    }
+
+    // Append the new order to the 'orders' array
+    user.orders.push({
+      productName,
+      price,
+      quantity,
+    });
+
+    // Save the updated user document
+    await user.save();
+
+    // Respond with success message
+    res.status(400).json({
+      success: true,
+      message: "Order created successfully!",
+      data: null,
+    });
+  } catch (error) {
+    // Handle any errors that occur during the process
+    return res.status(500).json({
+      success: false,
+      message: "User not found",
+      error: {
+        code: 404,
+        description: "User not found!",
+      },
+    });
+  }
+};
+
 export const UserControllers = {
   createUser,
   getAllUsers,
   getSingleUser,
   updateUser,
   deleteUser,
+  createOrder,
 };

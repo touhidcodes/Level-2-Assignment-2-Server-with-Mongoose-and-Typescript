@@ -9,7 +9,7 @@ const createOrder = async (req: Request, res: Response) => {
   try {
     // Find the user by ID
     const user = await UserModel.findOne({ userId });
-    console.log(user);
+
     if (!user) {
       return res.status(404).json({
         success: false,

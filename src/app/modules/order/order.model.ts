@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
-import { Order } from "./order.interface";
+import { TOrder } from "../user/user.interface";
 
-export const OrderSchema = new Schema<Order>(
+export const orderSchema = new Schema<TOrder>(
   {
     productName: { type: String, required: true },
     price: { type: Number, required: true },
@@ -10,6 +10,6 @@ export const OrderSchema = new Schema<Order>(
   { _id: false }
 );
 
-const OrderModel = mongoose.model<Order>("Order", OrderSchema);
+const OrderModel = mongoose.model<TOrder>("Order", orderSchema);
 
 export default OrderModel;
