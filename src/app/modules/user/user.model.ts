@@ -1,6 +1,7 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Document, Query, Schema } from "mongoose";
 import bcrypt from "bcrypt";
 
+//  user schema
 import {
   TAddress,
   TFullName,
@@ -36,7 +37,7 @@ export const orderSchema = new Schema<TOrder>(
   { _id: false }
 );
 
-const userSchema = new Schema<TUser, UserModel>({
+const userSchema = new Schema<TUser & Document, UserModel>({
   userId: {
     type: Number,
     required: [true, "User ID is required"],
@@ -58,12 +59,49 @@ const userSchema = new Schema<TUser, UserModel>({
 });
 
 //  static method
-userSchema.statics.isUserExist = async function (id: string) {
-  const existingUser = await User.findOne({ id });
-  return existingUser;
+
+userSchema.statics.isUserExists = async function (
+  userId: number
+): Promise<TUser | null> {
+  return this.findOne({ userId }).exec();
 };
 
-// Define a pre-save hook to create 'orders' property if it doesn't exist
+// Define a static method to calculate total price for a user
+userSchema.statics.calculateTotalPrice = async function (userId: string) {
+  const user = await this.findOne({ userId });
+
+  if (!user) {
+    return null;
+  }
+  // Calculate total price of orders
+  const result = await this.aggregate([
+    { $match: { userId } },
+    { $unwind: "$orders" },
+    {
+      $group: {
+        _id: null,
+        totalPrice: {
+          $sum: { $multiply: ["$orders.price", "$orders.quantity"] },
+        },
+      },
+    },
+    { $project: { totalPrice: 1, userId: 1, fullName: 1 } },
+  ]);
+
+  return result.length > 0 ? result[0].totalPrice : 0;
+};
+
+userSchema.pre(/^find/, function (this: Query<TUser, Document>, next) {
+  this.find({ isActive: { $eq: true } });
+  next();
+});
+
+userSchema.pre("aggregate", function (next) {
+  this.pipeline().unshift({ $match: { isActive: { $ne: true } } });
+  next();
+});
+
+//  hashing password
 userSchema.pre("save", async function (next) {
   // eslint-disable-next-line @typescript-eslint/no-this-alias
   const user = this;
@@ -74,6 +112,7 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-const User = mongoose.model<TUser, UserModel>("User", userSchema);
+//  user schema model
+const User = mongoose.model<TUser & Document, UserModel>("User", userSchema);
 
 export default User;

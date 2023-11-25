@@ -1,5 +1,7 @@
-import { Model } from "mongoose";
+/* eslint-disable no-unused-vars */
+import { Document, Model } from "mongoose";
 
+//  user type
 export type TFullName = {
   firstName: string;
   lastName: string;
@@ -30,7 +32,13 @@ export type TUser = {
   orders?: TOrder[];
 };
 
-export interface UserModel extends Model<TUser> {
-  // eslint-disable-next-line no-unused-vars
-  isUserExists(id: string): Promise<TUser | null>;
+interface returnData {
+  _id: number;
+  totalPrice: number;
+}
+
+//  user model interface
+export interface UserModel extends Model<TUser & Document> {
+  isUserExists(userId: number): Promise<TUser | null>;
+  calculateTotalPrice(id: number): Promise<returnData | null>;
 }

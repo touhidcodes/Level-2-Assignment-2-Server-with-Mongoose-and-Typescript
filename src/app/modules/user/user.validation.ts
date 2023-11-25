@@ -1,6 +1,6 @@
 import z from "zod";
 
-// Zod schemas
+//  zod validation schema
 const TFullNameValidation = z.object({
   firstName: z
     .string()
@@ -34,7 +34,7 @@ const TUserValidation = z.object({
   isActive: z.boolean(),
   hobbies: z.array(z.string()),
   address: TAddressValidation,
-  orders: z.array(TOrderValidation).default([]),
+  orders: z.optional(z.array(TOrderValidation).default([])),
 });
 
 export default TUserValidation;
