@@ -8,6 +8,7 @@ const createUserIntoDB = async (user: TUser) => {
 
 const getUserFromDB = async () => {
   const result = await User.find().select({
+    _id: 0,
     userId: 0,
     password: 0,
     isActive: 0,
@@ -19,17 +20,20 @@ const getUserFromDB = async () => {
 
 const getSingleUserFromDB = async (id: string) => {
   const result = await User.findOne({ userId: id }).select({
+    _id: 0,
     password: 0,
-    // orders: 0,
+    orders: 0,
   });
   return result;
 };
 
 const updateUserIntoDB = async (userId: string, userData: TUser) => {
-  const result = await User.updateOne({ userId }, userData, {
+  const result = await User.findOneAndUpdate({ userId }, userData, {
     new: true,
   }).select({
+    _id: 0,
     password: 0,
+    orders: 0,
   });
   return result;
 };
@@ -49,7 +53,7 @@ const getOrderFromDB = async (id: string) => {
   return result;
 };
 
-const getTotalPriceFromDB = async (userId: string) => {
+const getTotalPriceFromDB = async (userId: number) => {
   const result = await User.aggregate([
     { $match: { userId } },
     { $unwind: "$orders" },
@@ -63,8 +67,7 @@ const getTotalPriceFromDB = async (userId: string) => {
     },
     { $project: { totalPrice: 1 } },
   ]);
-
-  return result;
+  return result.length > 0 ? result[0].totalPrice : 0;
 };
 
 export const isUserExist = async (userId: number) => {

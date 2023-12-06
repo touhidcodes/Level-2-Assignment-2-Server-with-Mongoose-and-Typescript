@@ -65,37 +65,8 @@ userSchema.statics.isUserExists = async function (
   return this.findOne({ userId }).exec();
 };
 
-// Define a static method to calculate total price for a user
-userSchema.statics.calculateTotalPrice = async function (userId: string) {
-  const user = await this.findOne({ userId });
-
-  if (!user) {
-    return null;
-  }
-  // Calculate total price of orders
-  const result = await this.aggregate([
-    { $match: { userId } },
-    { $unwind: "$orders" },
-    {
-      $group: {
-        _id: null,
-        totalPrice: {
-          $sum: { $multiply: ["$orders.price", "$orders.quantity"] },
-        },
-      },
-    },
-    { $project: { totalPrice: 1 } },
-  ]);
-  return result.length > 0 ? result[0].totalPrice : 0;
-};
-
 userSchema.pre(/^find/, function (this: Query<TUser, Document>, next) {
   this.find({ isActive: { $eq: true } });
-  next();
-});
-
-userSchema.pre("aggregate", function (next) {
-  this.pipeline().unshift({ $match: { isActive: { $ne: true } } });
   next();
 });
 

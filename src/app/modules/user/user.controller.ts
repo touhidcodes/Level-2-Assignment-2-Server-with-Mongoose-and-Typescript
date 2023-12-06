@@ -5,7 +5,7 @@ import TUserValidation from "./user.validation";
 
 const createUser = async (req: Request, res: Response) => {
   try {
-    const { user } = req.body;
+    const user = req.body;
 
     const zodParseData = TUserValidation.parse(user);
     const result = await UserServices.createUserIntoDB(zodParseData);
@@ -22,7 +22,7 @@ const createUser = async (req: Request, res: Response) => {
 
     res.status(201).json({
       success: true,
-      message: "User is created successfully",
+      message: "User created successfully!",
       data: {
         userId,
         username,
@@ -49,10 +49,9 @@ const createUser = async (req: Request, res: Response) => {
 const getAllUsers = async (req: Request, res: Response) => {
   try {
     const result = await UserServices.getUserFromDB();
-
     res.status(200).json({
       success: true,
-      message: "Users fetched successfully",
+      message: "Users fetched successfully!",
       data: result,
     });
   } catch (error) {
@@ -86,7 +85,7 @@ const getSingleUser = async (req: Request, res: Response) => {
 
     res.status(200).json({
       success: true,
-      message: "Users fetched successfully",
+      message: "Users fetched successfully!",
       data: result,
     });
   } catch (error) {
@@ -120,7 +119,7 @@ const updateUser = async (req: Request, res: Response) => {
     const result = await UserServices.updateUserIntoDB(userId, userData);
     res.status(200).json({
       success: true,
-      message: "Users updated successfully",
+      message: "Users updated successfully!",
       data: result,
     });
   } catch (error) {
@@ -154,7 +153,7 @@ const deleteUser = async (req: Request, res: Response) => {
     await UserServices.deleteUserFromDB(userId);
     res.status(200).json({
       success: true,
-      message: "Users deleted successfully",
+      message: "Users deleted successfully!",
       data: null,
     });
   } catch (error) {
@@ -262,7 +261,7 @@ const getTotalPrice = async (req: Request, res: Response) => {
         },
       });
     }
-    const totalPrice = await User.calculateTotalPrice(Number(userId));
+    const totalPrice = await UserServices.getTotalPriceFromDB(Number(userId));
     res.status(200).json({
       success: true,
       message: "Total price calculated successfully!",

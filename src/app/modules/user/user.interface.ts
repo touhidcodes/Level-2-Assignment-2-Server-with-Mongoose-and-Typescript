@@ -29,16 +29,10 @@ export type TUser = {
   isActive: boolean;
   hobbies: string[];
   address: TAddress;
-  orders?: TOrder[];
+  orders?: TOrder[] | undefined;
 };
-
-interface returnData {
-  _id: number;
-  totalPrice: number;
-}
 
 //  user model interface
 export interface UserModel extends Model<TUser & Document> {
   isUserExists(userId: number): Promise<TUser | null>;
-  calculateTotalPrice(id: number): Promise<returnData | null>;
 }
